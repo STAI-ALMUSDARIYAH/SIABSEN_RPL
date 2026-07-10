@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sistem Informasi Akademik dan Absensi Mahasiswa RPL" />
+  <meta name="theme-color" content="#800020" />
+  <title>SIAKAD & Absensi RPL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <noscript>Aplikasi membutuhkan JavaScript agar dapat berjalan.</noscript>
+
+  <section id="loginView" class="auth-page">
+    <div class="auth-decoration auth-decoration-one"></div>
+    <div class="auth-decoration auth-decoration-two"></div>
+
+    <div class="auth-brand-panel">
+      <div class="brand-mark brand-mark-large">RPL</div>
+      <p class="eyebrow">PROGRAM STUDI HUKUM EKONOMI SYARIAH</p>
+      <h1>Sistem Informasi Akademik dan Absensi Mahasiswa RPL</h1>
+      <p class="auth-description">
+        Sekolah Tinggi Agama Islam Al-Musdariyah Kota Cimahi<br />
+        Tahun Akademik 2025–2026
+      </p>
+      <div class="feature-pills">
+        <span><i data-lucide="calendar-check"></i> Absensi Terjadwal</span>
+        <span><i data-lucide="clipboard-check"></i> UTS & UAS</span>
+        <span><i data-lucide="sheet"></i> Google Spreadsheet</span>
+      </div>
+    </div>
+
+    <div class="auth-form-panel">
+      <form id="loginForm" class="auth-card" autocomplete="on">
+        <div class="mobile-brand">
+          <div class="brand-mark">RPL</div>
+          <div>
+            <strong>SIAKAD RPL</strong>
+            <small>STAI Al-Musdariyah</small>
+          </div>
+        </div>
+        <div class="auth-heading">
+          <p class="eyebrow">SELAMAT DATANG</p>
+          <h2>Masuk ke akun Anda</h2>
+          <p>Gunakan NIM/username dan password yang terdaftar.</p>
+        </div>
+
+        <label class="field-label" for="loginUsername">NIM atau Username</label>
+        <div class="input-with-icon">
+          <i data-lucide="user"></i>
+          <input id="loginUsername" name="username" type="text" placeholder="Masukkan NIM atau username" required autocomplete="username" />
+        </div>
+
+        <label class="field-label" for="loginPassword">Password</label>
+        <div class="input-with-icon">
+          <i data-lucide="lock-keyhole"></i>
+          <input id="loginPassword" name="password" type="password" placeholder="Masukkan password" required autocomplete="current-password" />
+          <button type="button" id="togglePassword" class="icon-button input-action" aria-label="Tampilkan password">
+            <i data-lucide="eye"></i>
+          </button>
+        </div>
+
+        <div id="loginError" class="form-error hidden" role="alert"></div>
+        <button id="loginButton" type="submit" class="button button-primary button-full">
+          <i data-lucide="log-in"></i>
+          <span>Masuk</span>
+        </button>
+
+        <div class="auth-footer">
+          <span id="connectionBadge" class="connection-badge checking">Memeriksa koneksi API…</span>
+          <small>Waktu sistem: Asia/Jakarta</small>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="appView" class="app-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark">RPL</div>
+        <div>
+          <strong>SIAKAD RPL</strong>
+          <small>Hukum Ekonomi Syariah</small>
+        </div>
+      </div>
+      <nav id="sidebarNav" class="sidebar-nav" aria-label="Menu utama"></nav>
+      <div class="sidebar-footer">
+        <button id="syncButton" class="sidebar-action" type="button">
+          <i data-lucide="refresh-cw"></i>
+          <span>Sinkronkan Data</span>
+        </button>
+        <a id="spreadsheetLink" class="sidebar-action" href="#" target="_blank" rel="noopener noreferrer">
+          <i data-lucide="sheet"></i>
+          <span>Buka Spreadsheet</span>
+        </a>
+        <button id="logoutButton" class="sidebar-action danger" type="button">
+          <i data-lucide="log-out"></i>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </aside>
+
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <div class="app-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="menuButton" class="icon-button mobile-menu-button" type="button" aria-label="Buka menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <div>
+            <p id="pageEyebrow" class="page-eyebrow">SIAKAD RPL</p>
+            <h2 id="pageTitle">Dashboard</h2>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="server-clock" title="Waktu server Google Apps Script">
+            <i data-lucide="clock-3"></i>
+            <div>
+              <strong id="serverTime">--:--:--</strong>
+              <span id="serverDate">Memuat tanggal…</span>
+            </div>
+          </div>
+          <button id="notificationButton" class="icon-button notification-button" type="button" aria-label="Pengumuman">
+            <i data-lucide="bell"></i>
+            <span id="notificationDot" class="notification-dot hidden"></span>
+          </button>
+          <div class="user-menu-wrap">
+            <button id="userMenuButton" class="user-menu-button" type="button">
+              <span id="userAvatar" class="avatar">U</span>
+              <span class="user-menu-text">
+                <strong id="userName">Pengguna</strong>
+                <small id="userRole">Role</small>
+              </span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div id="userDropdown" class="user-dropdown hidden">
+              <button type="button" data-route="profile"><i data-lucide="user-round"></i> Profil</button>
+              <button type="button" data-route="change-password"><i data-lucide="key-round"></i> Ganti Password</button>
+              <button type="button" id="dropdownLogout"><i data-lucide="log-out"></i> Keluar</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main id="mainContent" class="main-content" tabindex="-1"></main>
+      <footer class="app-footer">
+        <span>© 2026 Program Studi Hukum Ekonomi Syariah</span>
+        <span id="lastSync">Belum disinkronkan</span>
+      </footer>
+    </div>
+  </section>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div id="modalBackdrop" class="modal-backdrop"></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <p id="modalEyebrow" class="page-eyebrow">FORMULIR</p>
+          <h3 id="modalTitle">Judul Modal</h3>
+        </div>
+        <button id="modalClose" type="button" class="icon-button" aria-label="Tutup">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalFooter" class="modal-footer"></div>
+    </div>
+  </div>
+
+  <div id="confirmDialog" class="modal hidden" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-backdrop"></div>
+    <div class="confirm-panel">
+      <div class="confirm-icon"><i data-lucide="triangle-alert"></i></div>
+      <h3 id="confirmTitle">Konfirmasi</h3>
+      <p id="confirmMessage">Apakah Anda yakin?</p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="button button-secondary" type="button">Batal</button>
+        <button id="confirmOkay" class="button button-danger" type="button">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay hidden" aria-live="polite" aria-busy="true">
+    <div class="loader"></div>
+    <p id="loadingText">Memuat data…</p>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+</body>
+</html>
