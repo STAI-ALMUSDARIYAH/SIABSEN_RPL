@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7a1f2b">
+  <meta name="description" content="Sistem Informasi Akademik dan Absensi Mahasiswa RPL Program Studi Hukum Ekonomi Syariah">
+  <meta name="api-base" content="https://script.google.com/macros/s/AKfycbz20AvGboho5kjrBzwPaP3_uhLYrlZnTxVrbr3NhFNSWRLGJLk__6I5MLJ7agGjL3Y4GA/exec">
+
+  <title>SIAKAD RPL | Hukum Ekonomi Syariah</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <noscript>
+    <div class="noscript-message">
+      JavaScript harus diaktifkan agar aplikasi dapat digunakan.
+    </div>
+  </noscript>
+
+  <!-- Loading awal -->
+  <div id="appLoader" class="app-loader" aria-live="polite">
+    <div class="loader-brand">
+      <div class="brand-mark brand-mark--large" aria-hidden="true">
+        <span>HES</span>
+      </div>
+      <div>
+        <strong>SIAKAD RPL</strong>
+        <small>Memuat aplikasi...</small>
+      </div>
+    </div>
+    <div class="loader-line"><span></span></div>
+  </div>
+
+  <!-- Notifikasi -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- =====================================================
+       LOGIN
+       ===================================================== -->
+  <main id="loginPage" class="login-page" hidden>
+    <section class="login-visual" aria-label="Informasi aplikasi">
+      <div class="login-visual__overlay"></div>
+      <div class="login-visual__content">
+        <div class="institution-badge">
+          <i data-lucide="graduation-cap" aria-hidden="true"></i>
+          <span>Program Studi Hukum Ekonomi Syariah</span>
+        </div>
+
+        <h1>Sistem Informasi Akademik dan Absensi Mahasiswa RPL</h1>
+        <p>
+          Kelola jadwal perkuliahan, kehadiran, UTS, dan UAS melalui satu sistem
+          yang rapi, aman, dan terintegrasi dengan Google Spreadsheet.
+        </p>
+
+        <div class="login-feature-grid">
+          <article class="login-feature">
+            <i data-lucide="calendar-clock" aria-hidden="true"></i>
+            <div>
+              <strong>Jadwal Realtime</strong>
+              <span>Jadwal dan batas absensi mengikuti waktu server.</span>
+            </div>
+          </article>
+          <article class="login-feature">
+            <i data-lucide="clipboard-check" aria-hidden="true"></i>
+            <div>
+              <strong>Absensi Terukur</strong>
+              <span>Mahasiswa hanya dapat absen pada waktu kuliah.</span>
+            </div>
+          </article>
+          <article class="login-feature">
+            <i data-lucide="file-check-2" aria-hidden="true"></i>
+            <div>
+              <strong>UTS dan UAS</strong>
+              <span>Ujian daring dengan tanggal, jam, dan durasi otomatis.</span>
+            </div>
+          </article>
+          <article class="login-feature">
+            <i data-lucide="database" aria-hidden="true"></i>
+            <div>
+              <strong>Terhubung Spreadsheet</strong>
+              <span>Data dapat dikelola dari aplikasi maupun Spreadsheet.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="login-visual__footer">
+        <span>Tahun Akademik <strong id="loginAcademicYear">2025/2026</strong></span>
+        <span id="loginServerTime">Waktu server: --</span>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <div class="login-card__header">
+          <div class="brand-row">
+            <div class="brand-mark" aria-hidden="true"><span>HES</span></div>
+            <div>
+              <strong>SIAKAD RPL</strong>
+              <small>STAI Al-Musdariyah Kota Cimahi</small>
+            </div>
+          </div>
+          <h2>Selamat Datang</h2>
+          <p>Masuk menggunakan akun admin atau NIM mahasiswa.</p>
+        </div>
+
+        <form id="loginForm" class="form-stack" autocomplete="on">
+          <div class="form-group">
+            <label for="loginIdentifier">Username atau NIM</label>
+            <div class="input-icon">
+              <i data-lucide="user-round" aria-hidden="true"></i>
+              <input
+                id="loginIdentifier"
+                name="identifier"
+                type="text"
+                placeholder="Masukkan username atau NIM"
+                autocomplete="username"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <div class="input-icon input-icon--action">
+              <i data-lucide="lock-keyhole" aria-hidden="true"></i>
+              <input
+                id="loginPassword"
+                name="password"
+                type="password"
+                placeholder="Masukkan password"
+                autocomplete="current-password"
+                required
+              >
+              <button id="toggleLoginPassword" class="icon-button" type="button" aria-label="Tampilkan password">
+                <i data-lucide="eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <label class="checkbox-row" for="rememberSession">
+            <input id="rememberSession" name="remember" type="checkbox" checked>
+            <span>Ingat sesi login pada perangkat ini</span>
+          </label>
+
+          <button id="loginButton" class="button button--primary button--block" type="submit">
+            <span>Masuk ke Aplikasi</span>
+            <i data-lucide="arrow-right" aria-hidden="true"></i>
+          </button>
+        </form>
+
+        <div class="login-help">
+          <i data-lucide="circle-help" aria-hidden="true"></i>
+          <p>Hubungi administrator program studi apabila akun belum aktif atau lupa password.</p>
+        </div>
+      </div>
+
+      <p class="login-copyright">
+        &copy; <span id="copyrightYear"></span> Program Studi Hukum Ekonomi Syariah
+      </p>
+    </section>
+  </main>
+
+  <!-- =====================================================
+       APLIKASI UTAMA
+       ===================================================== -->
+  <div id="appShell" class="app-shell" hidden>
+    <div id="sidebarBackdrop" class="sidebar-backdrop" hidden></div>
+
+    <aside id="sidebar" class="sidebar" aria-label="Navigasi utama">
+      <div class="sidebar__header">
+        <a href="#" class="sidebar-brand" data-page-link="dashboard" aria-label="Buka dashboard">
+          <div class="brand-mark" aria-hidden="true"><span>HES</span></div>
+          <div class="sidebar-brand__text">
+            <strong>SIAKAD RPL</strong>
+            <small>Hukum Ekonomi Syariah</small>
+          </div>
+        </a>
+        <button id="sidebarCloseButton" class="icon-button sidebar-close" type="button" aria-label="Tutup menu">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="sidebar__profile">
+        <div id="sidebarAvatar" class="avatar">A</div>
+        <div class="sidebar__profile-text">
+          <strong id="sidebarUserName">Pengguna</strong>
+          <span id="sidebarUserRole">-</span>
+          <small id="sidebarUserDetail">-</small>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <p class="nav-section-label">Menu Utama</p>
+
+        <button class="nav-link is-active" type="button" data-page-link="dashboard">
+          <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <!-- Menu Admin -->
+        <div id="adminNavigation" class="role-navigation" hidden>
+          <button class="nav-link" type="button" data-page-link="users">
+            <i data-lucide="users-round" aria-hidden="true"></i>
+            <span>Data Mahasiswa</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="courses">
+            <i data-lucide="book-open-text" aria-hidden="true"></i>
+            <span>Mata Kuliah</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="schedules">
+            <i data-lucide="calendar-days" aria-hidden="true"></i>
+            <span>Jadwal Kuliah</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="attendance-admin">
+            <i data-lucide="clipboard-list" aria-hidden="true"></i>
+            <span>Rekap Absensi</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="exams-admin">
+            <i data-lucide="file-pen-line" aria-hidden="true"></i>
+            <span>UTS dan UAS</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="grading">
+            <i data-lucide="badge-check" aria-hidden="true"></i>
+            <span>Penilaian Ujian</span>
+            <span id="gradingBadge" class="nav-badge" hidden>0</span>
+          </button>
+        </div>
+
+        <!-- Menu Mahasiswa -->
+        <div id="studentNavigation" class="role-navigation" hidden>
+          <button class="nav-link" type="button" data-page-link="attendance-student">
+            <i data-lucide="calendar-check-2" aria-hidden="true"></i>
+            <span>Jadwal dan Absensi</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="exams-student">
+            <i data-lucide="notebook-tabs" aria-hidden="true"></i>
+            <span>UTS dan UAS</span>
+          </button>
+          <button class="nav-link" type="button" data-page-link="profile">
+            <i data-lucide="circle-user-round" aria-hidden="true"></i>
+            <span>Profil Saya</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="server-status">
+          <span class="status-dot"></span>
+          <div>
+            <strong>Server Aktif</strong>
+            <small id="sidebarServerTime">--</small>
+          </div>
+        </div>
+        <button id="sidebarLogoutButton" class="nav-link nav-link--danger" type="button">
+          <i data-lucide="log-out" aria-hidden="true"></i>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </aside>
+
+    <section class="app-main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button id="sidebarOpenButton" class="icon-button menu-button" type="button" aria-label="Buka menu">
+            <i data-lucide="menu" aria-hidden="true"></i>
+          </button>
+          <div>
+            <p id="pageEyebrow" class="page-eyebrow">SIAKAD RPL</p>
+            <h1 id="pageTitle">Dashboard</h1>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <div class="topbar-clock" aria-label="Waktu server">
+            <i data-lucide="clock-3" aria-hidden="true"></i>
+            <div>
+              <strong id="topbarClock">--:--:--</strong>
+              <span id="topbarDate">--</span>
+            </div>
+          </div>
+
+          <div class="user-menu">
+            <button id="userMenuButton" class="user-menu__trigger" type="button" aria-expanded="false">
+              <span id="topbarAvatar" class="avatar avatar--small">A</span>
+              <span class="user-menu__identity">
+                <strong id="topbarUserName">Pengguna</strong>
+                <small id="topbarUserRole">-</small>
+              </span>
+              <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <div id="userMenuDropdown" class="user-menu__dropdown" hidden>
+              <button type="button" data-page-link="profile" class="dropdown-item student-only">
+                <i data-lucide="user-round" aria-hidden="true"></i>
+                Profil Saya
+              </button>
+              <button id="topbarLogoutButton" type="button" class="dropdown-item dropdown-item--danger">
+                <i data-lucide="log-out" aria-hidden="true"></i>
+                Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main id="pageContainer" class="page-container">
+        <!-- =================================================
+             DASHBOARD
+             ================================================= -->
+        <section id="page-dashboard" class="app-page is-active" data-page="dashboard">
+          <div class="welcome-banner">
+            <div>
+              <span class="welcome-banner__label">Selamat datang kembali</span>
+              <h2 id="welcomeName">Pengguna</h2>
+              <p id="welcomeMessage">Pantau kegiatan akademik Anda melalui dashboard.</p>
+            </div>
+            <div class="welcome-banner__illustration" aria-hidden="true">
+              <i data-lucide="graduation-cap"></i>
+            </div>
+          </div>
+
+          <!-- Dashboard Admin -->
+          <div id="adminDashboard" hidden>
+            <div class="stats-grid">
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="users-round"></i></div>
+                <div>
+                  <span>Total Mahasiswa</span>
+                  <strong id="statStudents">0</strong>
+                  <small>Akun mahasiswa terdaftar</small>
+                </div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="book-open-check"></i></div>
+                <div>
+                  <span>Mata Kuliah Aktif</span>
+                  <strong id="statCourses">0</strong>
+                  <small>Dua semester aktif</small>
+                </div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="calendar-check"></i></div>
+                <div>
+                  <span>Absensi Hari Ini</span>
+                  <strong id="statAttendanceToday">0</strong>
+                  <small>Data kehadiran masuk</small>
+                </div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="file-clock"></i></div>
+                <div>
+                  <span>Ujian Aktif</span>
+                  <strong id="statActiveExams">0</strong>
+                  <small id="statPendingGrading">0 menunggu penilaian</small>
+                </div>
+              </article>
+            </div>
+
+            <div class="dashboard-grid dashboard-grid--admin">
+              <article class="panel">
+                <div class="panel__header">
+                  <div>
+                    <span class="panel__eyebrow">Akses Cepat</span>
+                    <h3>Tools Administrator</h3>
+                  </div>
+                </div>
+                <div class="quick-action-grid">
+                  <button class="quick-action" type="button" data-open-modal="userModal">
+                    <i data-lucide="user-plus"></i>
+                    <span>Tambah Mahasiswa</span>
+                  </button>
+                  <button class="quick-action" type="button" data-open-modal="courseModal">
+                    <i data-lucide="book-plus"></i>
+                    <span>Tambah Mata Kuliah</span>
+                  </button>
+                  <button class="quick-action" type="button" data-open-modal="scheduleModal">
+                    <i data-lucide="calendar-plus-2"></i>
+                    <span>Buat Jadwal</span>
+                  </button>
+                  <button class="quick-action" type="button" data-open-modal="examModal">
+                    <i data-lucide="file-plus-2"></i>
+                    <span>Buat Ujian</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel__header">
+                  <div>
+                    <span class="panel__eyebrow">Informasi Sistem</span>
+                    <h3>Status Akademik</h3>
+                  </div>
+                </div>
+                <dl class="info-list">
+                  <div><dt>Tahun Akademik</dt><dd id="dashboardAcademicYear">2025/2026</dd></div>
+                  <div><dt>Semester Aktif</dt><dd id="dashboardActiveSemesters">-</dd></div>
+                  <div><dt>Jumlah Jadwal</dt><dd id="dashboardSchedules">0</dd></div>
+                  <div><dt>Zona Waktu</dt><dd>Asia/Jakarta</dd></div>
+                </dl>
+              </article>
+            </div>
+          </div>
+
+          <!-- Dashboard Mahasiswa -->
+          <div id="studentDashboard" hidden>
+            <div class="stats-grid stats-grid--student">
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="calendar-days"></i></div>
+                <div>
+                  <span>Jadwal Hari Ini</span>
+                  <strong id="studentStatSchedules">0</strong>
+                  <small>Mata kuliah terjadwal</small>
+                </div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="clipboard-check"></i></div>
+                <div>
+                  <span>Total Kehadiran</span>
+                  <strong id="studentStatAttendance">0</strong>
+                  <small>Riwayat absensi tersimpan</small>
+                </div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="circle-check-big"></i></div>
+                <div>
+                  <span>Hadir</span>
+                  <strong id="studentStatPresent">0</strong>
+                  <small>Datang tepat waktu</small>
+                </div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-card__icon"><i data-lucide="alarm-clock"></i></div>
+                <div>
+                  <span>Terlambat</span>
+                  <strong id="studentStatLate">0</strong>
+                  <small>Lewat batas toleransi</small>
+                </div>
+              </article>
+            </div>
+
+            <div class="dashboard-grid">
+              <article class="panel">
+                <div class="panel__header">
+                  <div>
+                    <span class="panel__eyebrow">Hari Ini</span>
+                    <h3>Jadwal Perkuliahan</h3>
+                  </div>
+                  <button class="button button--ghost button--small" type="button" data-page-link="attendance-student">
+                    Lihat Semua
+                  </button>
+                </div>
+                <div id="dashboardTodaySchedules" class="schedule-list empty-state-slot"></div>
+              </article>
+
+              <article class="panel">
+                <div class="panel__header">
+                  <div>
+                    <span class="panel__eyebrow">Ujian</span>
+                    <h3>Ujian Sedang Dibuka</h3>
+                  </div>
+                  <button class="button button--ghost button--small" type="button" data-page-link="exams-student">
+                    Lihat Semua
+                  </button>
+                </div>
+                <div id="dashboardOpenExams" class="exam-list empty-state-slot"></div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================
+             DATA MAHASISWA
+             ================================================= -->
+        <section id="page-users" class="app-page" data-page="users" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Data Mahasiswa</h2>
+              <p>Kelola akun mahasiswa untuk dua semester aktif.</p>
+            </div>
+            <button class="button button--primary" type="button" data-open-modal="userModal">
+              <i data-lucide="user-plus"></i>
+              Tambah Mahasiswa
+            </button>
+          </div>
+
+          <article class="panel">
+            <div class="toolbar">
+              <div class="search-field">
+                <i data-lucide="search" aria-hidden="true"></i>
+                <input id="userSearch" type="search" placeholder="Cari NIM, nama, atau email...">
+              </div>
+              <select id="userSemesterFilter" class="select-control" aria-label="Filter semester">
+                <option value="">Semua Semester</option>
+              </select>
+              <select id="userStatusFilter" class="select-control" aria-label="Filter status">
+                <option value="">Semua Status</option>
+                <option value="ACTIVE">Aktif</option>
+                <option value="INACTIVE">Tidak Aktif</option>
+              </select>
+              <button id="refreshUsersButton" class="button button--secondary" type="button">
+                <i data-lucide="refresh-cw"></i>
+                Perbarui
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>NIM</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>Email</th>
+                    <th>Semester</th>
+                    <th>Status</th>
+                    <th class="table-actions-column">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
+            <div id="usersEmptyState" class="empty-state" hidden></div>
+            <div class="table-footer">
+              <span id="usersTableInfo">Menampilkan 0 mahasiswa</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             MATA KULIAH
+             ================================================= -->
+        <section id="page-courses" class="app-page" data-page="courses" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Mata Kuliah</h2>
+              <p>Atur kode, nama mata kuliah, dosen, SKS, dan semester.</p>
+            </div>
+            <button class="button button--primary" type="button" data-open-modal="courseModal">
+              <i data-lucide="book-plus"></i>
+              Tambah Mata Kuliah
+            </button>
+          </div>
+
+          <article class="panel">
+            <div class="toolbar">
+              <div class="search-field">
+                <i data-lucide="search" aria-hidden="true"></i>
+                <input id="courseSearch" type="search" placeholder="Cari mata kuliah atau dosen...">
+              </div>
+              <select id="courseSemesterFilter" class="select-control" aria-label="Filter semester mata kuliah">
+                <option value="">Semua Semester</option>
+              </select>
+              <button id="refreshCoursesButton" class="button button--secondary" type="button">
+                <i data-lucide="refresh-cw"></i>
+                Perbarui
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Kode</th>
+                    <th>Mata Kuliah</th>
+                    <th>Dosen Pengampu</th>
+                    <th>Semester</th>
+                    <th>SKS</th>
+                    <th>Status</th>
+                    <th class="table-actions-column">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="coursesTableBody"></tbody>
+              </table>
+            </div>
+            <div id="coursesEmptyState" class="empty-state" hidden></div>
+            <div class="table-footer"><span id="coursesTableInfo">Menampilkan 0 mata kuliah</span></div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             JADWAL KULIAH
+             ================================================= -->
+        <section id="page-schedules" class="app-page" data-page="schedules" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Jadwal Perkuliahan</h2>
+              <p>Atur jadwal yang menjadi dasar pembukaan dan penutupan absensi.</p>
+            </div>
+            <button class="button button--primary" type="button" data-open-modal="scheduleModal">
+              <i data-lucide="calendar-plus-2"></i>
+              Tambah Jadwal
+            </button>
+          </div>
+
+          <article class="panel">
+            <div class="toolbar">
+              <select id="scheduleSemesterFilter" class="select-control" aria-label="Filter semester jadwal">
+                <option value="">Semua Semester</option>
+              </select>
+              <select id="scheduleDayFilter" class="select-control" aria-label="Filter hari jadwal">
+                <option value="">Semua Hari</option>
+                <option value="SENIN">Senin</option>
+                <option value="SELASA">Selasa</option>
+                <option value="RABU">Rabu</option>
+                <option value="KAMIS">Kamis</option>
+                <option value="JUMAT">Jumat</option>
+                <option value="SABTU">Sabtu</option>
+                <option value="MINGGU">Minggu</option>
+              </select>
+              <button id="refreshSchedulesButton" class="button button--secondary" type="button">
+                <i data-lucide="refresh-cw"></i>
+                Perbarui
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Hari</th>
+                    <th>Jam</th>
+                    <th>Mata Kuliah</th>
+                    <th>Dosen</th>
+                    <th>Ruang</th>
+                    <th>Semester</th>
+                    <th>Periode</th>
+                    <th>Status</th>
+                    <th class="table-actions-column">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="schedulesTableBody"></tbody>
+              </table>
+            </div>
+            <div id="schedulesEmptyState" class="empty-state" hidden></div>
+            <div class="table-footer"><span id="schedulesTableInfo">Menampilkan 0 jadwal</span></div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             REKAP ABSENSI ADMIN
+             ================================================= -->
+        <section id="page-attendance-admin" class="app-page" data-page="attendance-admin" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Rekap Absensi Mahasiswa</h2>
+              <p>Pantau kehadiran mahasiswa berdasarkan tanggal, semester, dan mata kuliah.</p>
+            </div>
+            <button id="exportAttendanceButton" class="button button--secondary" type="button">
+              <i data-lucide="file-down"></i>
+              Unduh CSV
+            </button>
+          </div>
+
+          <article class="panel">
+            <div class="toolbar toolbar--wrap">
+              <div class="form-control-inline">
+                <label for="attendanceDateFilter">Tanggal</label>
+                <input id="attendanceDateFilter" class="input-control" type="date">
+              </div>
+              <div class="form-control-inline">
+                <label for="attendanceSemesterFilter">Semester</label>
+                <select id="attendanceSemesterFilter" class="select-control">
+                  <option value="">Semua Semester</option>
+                </select>
+              </div>
+              <div class="form-control-inline form-control-inline--grow">
+                <label for="attendanceCourseFilter">Mata Kuliah</label>
+                <select id="attendanceCourseFilter" class="select-control">
+                  <option value="">Semua Mata Kuliah</option>
+                </select>
+              </div>
+              <button id="refreshAttendanceButton" class="button button--primary" type="button">
+                <i data-lucide="search"></i>
+                Tampilkan
+              </button>
+            </div>
+
+            <div class="attendance-summary">
+              <div><span>Total Data</span><strong id="attendanceSummaryTotal">0</strong></div>
+              <div><span>Hadir</span><strong id="attendanceSummaryPresent">0</strong></div>
+              <div><span>Terlambat</span><strong id="attendanceSummaryLate">0</strong></div>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Tanggal</th>
+                    <th>Waktu</th>
+                    <th>NIM</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>Mata Kuliah</th>
+                    <th>Semester</th>
+                    <th>Status</th>
+                    <th>Catatan</th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceTableBody"></tbody>
+              </table>
+            </div>
+            <div id="attendanceEmptyState" class="empty-state" hidden></div>
+            <div class="table-footer"><span id="attendanceTableInfo">Menampilkan 0 data absensi</span></div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             UJIAN ADMIN
+             ================================================= -->
+        <section id="page-exams-admin" class="app-page" data-page="exams-admin" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Pengelolaan UTS dan UAS</h2>
+              <p>Buat jadwal ujian, atur durasi, publikasi, dan kelola soal.</p>
+            </div>
+            <button class="button button--primary" type="button" data-open-modal="examModal">
+              <i data-lucide="file-plus-2"></i>
+              Buat Ujian
+            </button>
+          </div>
+
+          <article class="panel">
+            <div class="toolbar">
+              <select id="examSemesterFilter" class="select-control">
+                <option value="">Semua Semester</option>
+              </select>
+              <select id="examTypeFilter" class="select-control">
+                <option value="">Semua Jenis</option>
+                <option value="UTS">UTS</option>
+                <option value="UAS">UAS</option>
+                <option value="QUIZ">Kuis</option>
+                <option value="TUGAS">Tugas</option>
+              </select>
+              <button id="refreshExamsButton" class="button button--secondary" type="button">
+                <i data-lucide="refresh-cw"></i>
+                Perbarui
+              </button>
+            </div>
+
+            <div id="adminExamGrid" class="exam-admin-grid"></div>
+            <div id="adminExamsEmptyState" class="empty-state" hidden></div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             PENILAIAN ADMIN
+             ================================================= -->
+        <section id="page-grading" class="app-page" data-page="grading" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Penilaian Ujian</h2>
+              <p>Periksa jawaban esai dan tambahkan nilai manual mahasiswa.</p>
+            </div>
+          </div>
+
+          <article class="panel">
+            <div class="toolbar">
+              <select id="gradingExamFilter" class="select-control">
+                <option value="">Pilih Ujian</option>
+              </select>
+              <select id="gradingStatusFilter" class="select-control">
+                <option value="">Semua Status</option>
+                <option value="MENUNGGU_PENILAIAN">Menunggu Penilaian</option>
+                <option value="SELESAI">Selesai</option>
+                <option value="TERLAMBAT">Terlambat</option>
+              </select>
+              <button id="refreshGradingButton" class="button button--secondary" type="button">
+                <i data-lucide="refresh-cw"></i>
+                Perbarui
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>NIM</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>Mulai</th>
+                    <th>Dikumpulkan</th>
+                    <th>Nilai Otomatis</th>
+                    <th>Nilai Manual</th>
+                    <th>Nilai Akhir</th>
+                    <th>Status</th>
+                    <th class="table-actions-column">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="gradingTableBody"></tbody>
+              </table>
+            </div>
+            <div id="gradingEmptyState" class="empty-state" hidden></div>
+          </article>
+        </section>
+
+        <!-- =================================================
+             JADWAL DAN ABSENSI MAHASISWA
+             ================================================= -->
+        <section id="page-attendance-student" class="app-page" data-page="attendance-student" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Jadwal dan Absensi</h2>
+              <p>Absensi hanya tersedia selama waktu perkuliahan berlangsung.</p>
+            </div>
+            <div class="date-navigation">
+              <button id="previousScheduleDate" class="icon-button" type="button" aria-label="Tanggal sebelumnya">
+                <i data-lucide="chevron-left"></i>
+              </button>
+              <input id="studentScheduleDate" type="date" aria-label="Pilih tanggal jadwal">
+              <button id="nextScheduleDate" class="icon-button" type="button" aria-label="Tanggal berikutnya">
+                <i data-lucide="chevron-right"></i>
+              </button>
+              <button id="todayScheduleButton" class="button button--secondary button--small" type="button">Hari Ini</button>
+            </div>
+          </div>
+
+          <div class="attendance-notice">
+            <i data-lucide="info" aria-hidden="true"></i>
+            <div>
+              <strong>Ketentuan Absensi</strong>
+              <p>Gunakan tombol absensi pada jadwal yang sedang dibuka. Waktu ditentukan oleh server Asia/Jakarta.</p>
+            </div>
+          </div>
+
+          <div id="studentScheduleList" class="student-schedule-grid"></div>
+          <div id="studentScheduleEmptyState" class="empty-state panel" hidden></div>
+        </section>
+
+        <!-- =================================================
+             UJIAN MAHASISWA
+             ================================================= -->
+        <section id="page-exams-student" class="app-page" data-page="exams-student" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>UTS dan UAS</h2>
+              <p>Kerjakan ujian sesuai tanggal, jam, dan durasi yang telah ditentukan.</p>
+            </div>
+            <button id="refreshStudentExamsButton" class="button button--secondary" type="button">
+              <i data-lucide="refresh-cw"></i>
+              Perbarui
+            </button>
+          </div>
+
+          <div class="exam-tabs" role="tablist" aria-label="Filter ujian">
+            <button class="exam-tab is-active" type="button" data-exam-state-filter="ALL">Semua</button>
+            <button class="exam-tab" type="button" data-exam-state-filter="OPEN">Sedang Dibuka</button>
+            <button class="exam-tab" type="button" data-exam-state-filter="UPCOMING">Akan Datang</button>
+            <button class="exam-tab" type="button" data-exam-state-filter="CLOSED">Selesai</button>
+          </div>
+
+          <div id="studentExamGrid" class="student-exam-grid"></div>
+          <div id="studentExamsEmptyState" class="empty-state panel" hidden></div>
+        </section>
+
+        <!-- =================================================
+             PROFIL MAHASISWA
+             ================================================= -->
+        <section id="page-profile" class="app-page" data-page="profile" hidden>
+          <div class="page-actions">
+            <div>
+              <h2>Profil Saya</h2>
+              <p>Informasi akun mahasiswa yang tersimpan pada sistem.</p>
+            </div>
+          </div>
+
+          <div class="profile-layout">
+            <article class="panel profile-card">
+              <div id="profileAvatar" class="avatar avatar--profile">M</div>
+              <h3 id="profileName">Nama Mahasiswa</h3>
+              <p id="profileNim">NIM -</p>
+              <span id="profileStatus" class="badge badge--success">Aktif</span>
+            </article>
+
+            <article class="panel">
+              <div class="panel__header">
+                <div>
+                  <span class="panel__eyebrow">Data Akun</span>
+                  <h3>Informasi Mahasiswa</h3>
+                </div>
+              </div>
+              <dl class="profile-data-list">
+                <div><dt>Username</dt><dd id="profileUsername">-</dd></div>
+                <div><dt>NIM</dt><dd id="profileNimDetail">-</dd></div>
+                <div><dt>Nama Lengkap</dt><dd id="profileNameDetail">-</dd></div>
+                <div><dt>Email</dt><dd id="profileEmail">-</dd></div>
+                <div><dt>Semester</dt><dd id="profileSemester">-</dd></div>
+                <div><dt>Peran</dt><dd>Mahasiswa</dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+        <!-- =================================================
+             RUANG UJIAN MAHASISWA
+             ================================================= -->
+        <section id="page-exam-room" class="app-page exam-room-page" data-page="exam-room" hidden>
+          <div class="exam-room-header">
+            <div>
+              <span id="examRoomType" class="badge badge--maroon">UJIAN</span>
+              <h2 id="examRoomTitle">Judul Ujian</h2>
+              <p id="examRoomCourse">Mata Kuliah</p>
+            </div>
+            <div class="exam-timer" aria-live="polite">
+              <i data-lucide="timer"></i>
+              <div>
+                <span>Sisa Waktu</span>
+                <strong id="examTimer">00:00:00</strong>
+              </div>
+            </div>
+          </div>
+
+          <form id="examAnswerForm">
+            <div class="exam-room-layout">
+              <aside class="panel exam-navigator">
+                <div class="panel__header">
+                  <div>
+                    <span class="panel__eyebrow">Navigasi</span>
+                    <h3>Nomor Soal</h3>
+                  </div>
+                </div>
+                <div id="examQuestionNavigator" class="question-number-grid"></div>
+                <div class="question-legend">
+                  <span><i class="legend-dot legend-dot--answered"></i> Dijawab</span>
+                  <span><i class="legend-dot"></i> Belum dijawab</span>
+                </div>
+              </aside>
+
+              <div>
+                <div id="examQuestionsContainer" class="exam-question-list"></div>
+                <div class="exam-submit-panel panel">
+                  <div>
+                    <strong>Pastikan semua jawaban telah diperiksa.</strong>
+                    <p>Jawaban yang sudah dikumpulkan tidak dapat diubah kembali.</p>
+                  </div>
+                  <button id="submitExamButton" class="button button--primary" type="submit">
+                    <i data-lucide="send"></i>
+                    Kumpulkan Jawaban
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <!-- =====================================================
+       MODAL KONFIRMASI
+       ===================================================== -->
+  <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="confirmModal"></div>
+    <div class="modal__dialog modal__dialog--small">
+      <div class="confirm-icon"><i data-lucide="circle-alert"></i></div>
+      <h2 id="confirmModalTitle">Konfirmasi</h2>
+      <p id="confirmModalMessage">Apakah Anda yakin ingin melanjutkan?</p>
+      <div class="modal__actions modal__actions--center">
+        <button class="button button--secondary" type="button" data-close-modal="confirmModal">Batal</button>
+        <button id="confirmModalButton" class="button button--danger" type="button">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL MAHASISWA
+       ===================================================== -->
+  <div id="userModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="userModal"></div>
+    <div class="modal__dialog">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">Akun Pengguna</span>
+          <h2 id="userModalTitle">Tambah Mahasiswa</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="userModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="userForm">
+        <input id="userId" name="USER_ID" type="hidden">
+        <div class="form-grid form-grid--two">
+          <div class="form-group">
+            <label for="userNim">NIM <span class="required">*</span></label>
+            <input id="userNim" name="NIM" type="text" placeholder="Contoh: 231001" required>
+          </div>
+          <div class="form-group">
+            <label for="userName">Nama Lengkap <span class="required">*</span></label>
+            <input id="userName" name="NAME" type="text" placeholder="Nama mahasiswa" required>
+          </div>
+          <div class="form-group">
+            <label for="userEmail">Email</label>
+            <input id="userEmail" name="EMAIL" type="email" placeholder="nama@email.com">
+          </div>
+          <div class="form-group">
+            <label for="userSemester">Semester <span class="required">*</span></label>
+            <select id="userSemester" name="SEMESTER" required>
+              <option value="">Pilih semester</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="userPassword">Password</label>
+            <div class="input-icon input-icon--action">
+              <i data-lucide="key-round"></i>
+              <input id="userPassword" name="password" type="password" placeholder="Kosongkan untuk password default">
+              <button class="icon-button password-toggle" type="button" data-password-target="userPassword" aria-label="Tampilkan password">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+            <small>Password baru hanya diperlukan saat ingin mengganti password.</small>
+          </div>
+          <div class="form-group">
+            <label for="userStatus">Status</label>
+            <select id="userStatus" name="STATUS">
+              <option value="ACTIVE">Aktif</option>
+              <option value="INACTIVE">Tidak Aktif</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="button button--secondary" type="button" data-close-modal="userModal">Batal</button>
+          <button id="saveUserButton" class="button button--primary" type="submit">
+            <i data-lucide="save"></i>
+            Simpan Mahasiswa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL MATA KULIAH
+       ===================================================== -->
+  <div id="courseModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="courseModal"></div>
+    <div class="modal__dialog">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">Data Akademik</span>
+          <h2 id="courseModalTitle">Tambah Mata Kuliah</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="courseModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="courseForm">
+        <input id="courseId" name="COURSE_ID" type="hidden">
+        <div class="form-grid form-grid--two">
+          <div class="form-group">
+            <label for="courseCode">Kode Mata Kuliah <span class="required">*</span></label>
+            <input id="courseCode" name="COURSE_CODE" type="text" placeholder="Contoh: HES601" required>
+          </div>
+          <div class="form-group">
+            <label for="courseName">Nama Mata Kuliah <span class="required">*</span></label>
+            <input id="courseName" name="COURSE_NAME" type="text" placeholder="Nama mata kuliah" required>
+          </div>
+          <div class="form-group form-group--span-two">
+            <label for="courseLecturer">Dosen Pengampu</label>
+            <input id="courseLecturer" name="LECTURER" type="text" placeholder="Nama dosen dan gelar">
+          </div>
+          <div class="form-group">
+            <label for="courseSemester">Semester <span class="required">*</span></label>
+            <select id="courseSemester" name="SEMESTER" required>
+              <option value="">Pilih semester</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="courseSks">Jumlah SKS</label>
+            <input id="courseSks" name="SKS" type="number" min="1" max="8" value="2">
+          </div>
+          <div class="form-group">
+            <label for="courseStatus">Status</label>
+            <select id="courseStatus" name="STATUS">
+              <option value="ACTIVE">Aktif</option>
+              <option value="INACTIVE">Tidak Aktif</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="button button--secondary" type="button" data-close-modal="courseModal">Batal</button>
+          <button id="saveCourseButton" class="button button--primary" type="submit">
+            <i data-lucide="save"></i>
+            Simpan Mata Kuliah
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL JADWAL
+       ===================================================== -->
+  <div id="scheduleModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="scheduleModal"></div>
+    <div class="modal__dialog">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">Waktu Perkuliahan</span>
+          <h2 id="scheduleModalTitle">Tambah Jadwal</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="scheduleModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="scheduleForm">
+        <input id="scheduleId" name="SCHEDULE_ID" type="hidden">
+        <div class="form-grid form-grid--two">
+          <div class="form-group form-group--span-two">
+            <label for="scheduleCourse">Mata Kuliah <span class="required">*</span></label>
+            <select id="scheduleCourse" name="COURSE_ID" required>
+              <option value="">Pilih mata kuliah</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="scheduleSemester">Semester <span class="required">*</span></label>
+            <select id="scheduleSemester" name="SEMESTER" required>
+              <option value="">Pilih semester</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="scheduleDay">Hari <span class="required">*</span></label>
+            <select id="scheduleDay" name="DAY" required>
+              <option value="">Pilih hari</option>
+              <option value="SENIN">Senin</option>
+              <option value="SELASA">Selasa</option>
+              <option value="RABU">Rabu</option>
+              <option value="KAMIS">Kamis</option>
+              <option value="JUMAT">Jumat</option>
+              <option value="SABTU">Sabtu</option>
+              <option value="MINGGU">Minggu</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="scheduleStartTime">Jam Mulai <span class="required">*</span></label>
+            <input id="scheduleStartTime" name="START_TIME" type="time" required>
+          </div>
+          <div class="form-group">
+            <label for="scheduleEndTime">Jam Selesai <span class="required">*</span></label>
+            <input id="scheduleEndTime" name="END_TIME" type="time" required>
+          </div>
+          <div class="form-group">
+            <label for="scheduleRoom">Ruang</label>
+            <input id="scheduleRoom" name="ROOM" type="text" placeholder="Contoh: Ruang 01">
+          </div>
+          <div class="form-group">
+            <label for="scheduleStatus">Status</label>
+            <select id="scheduleStatus" name="STATUS">
+              <option value="ACTIVE">Aktif</option>
+              <option value="INACTIVE">Tidak Aktif</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="scheduleDateStart">Tanggal Mulai</label>
+            <input id="scheduleDateStart" name="DATE_START" type="date">
+          </div>
+          <div class="form-group">
+            <label for="scheduleDateEnd">Tanggal Selesai</label>
+            <input id="scheduleDateEnd" name="DATE_END" type="date">
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="button button--secondary" type="button" data-close-modal="scheduleModal">Batal</button>
+          <button id="saveScheduleButton" class="button button--primary" type="submit">
+            <i data-lucide="save"></i>
+            Simpan Jadwal
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL UJIAN
+       ===================================================== -->
+  <div id="examModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="examModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="examModal"></div>
+    <div class="modal__dialog modal__dialog--large">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">UTS, UAS, Kuis, dan Tugas</span>
+          <h2 id="examModalTitle">Buat Ujian</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="examModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="examForm">
+        <input id="examId" name="EXAM_ID" type="hidden">
+        <div class="form-grid form-grid--two">
+          <div class="form-group form-group--span-two">
+            <label for="examTitle">Judul Ujian <span class="required">*</span></label>
+            <input id="examTitle" name="TITLE" type="text" placeholder="Contoh: UTS Hukum Perbankan Syariah" required>
+          </div>
+          <div class="form-group">
+            <label for="examCourse">Mata Kuliah <span class="required">*</span></label>
+            <select id="examCourse" name="COURSE_ID" required>
+              <option value="">Pilih mata kuliah</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="examSemester">Semester <span class="required">*</span></label>
+            <select id="examSemester" name="SEMESTER" required>
+              <option value="">Pilih semester</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="examType">Jenis Ujian <span class="required">*</span></label>
+            <select id="examType" name="TYPE" required>
+              <option value="UTS">UTS</option>
+              <option value="UAS">UAS</option>
+              <option value="QUIZ">Kuis</option>
+              <option value="TUGAS">Tugas</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="examDuration">Durasi (menit) <span class="required">*</span></label>
+            <input id="examDuration" name="DURATION_MINUTES" type="number" min="1" value="90" required>
+          </div>
+          <div class="form-group">
+            <label for="examStartAt">Tanggal dan Jam Mulai <span class="required">*</span></label>
+            <input id="examStartAt" name="START_AT" type="datetime-local" required>
+          </div>
+          <div class="form-group">
+            <label for="examEndAt">Tanggal dan Jam Selesai <span class="required">*</span></label>
+            <input id="examEndAt" name="END_AT" type="datetime-local" required>
+          </div>
+          <div class="form-group">
+            <label for="examStatus">Status Publikasi</label>
+            <select id="examStatus" name="STATUS">
+              <option value="DRAFT">Draft</option>
+              <option value="PUBLISHED">Dipublikasikan</option>
+              <option value="INACTIVE">Tidak Aktif</option>
+            </select>
+          </div>
+          <div class="form-group form-group--checkbox">
+            <label class="checkbox-card" for="examRandomize">
+              <input id="examRandomize" name="RANDOMIZE" type="checkbox">
+              <span>
+                <strong>Acak Urutan Soal</strong>
+                <small>Setiap mahasiswa dapat menerima urutan soal berbeda.</small>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="button button--secondary" type="button" data-close-modal="examModal">Batal</button>
+          <button id="saveExamButton" class="button button--primary" type="submit">
+            <i data-lucide="save"></i>
+            Simpan Ujian
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL KELOLA SOAL
+       ===================================================== -->
+  <div id="questionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="questionsModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="questionsModal"></div>
+    <div class="modal__dialog modal__dialog--xlarge">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">Bank Soal</span>
+          <h2 id="questionsModalTitle">Kelola Soal Ujian</h2>
+          <p id="questionsModalSubtitle">-</p>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="questionsModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="question-manager-layout">
+        <section class="question-form-panel">
+          <form id="questionForm">
+            <input id="questionId" name="QUESTION_ID" type="hidden">
+            <input id="questionExamId" name="EXAM_ID" type="hidden">
+
+            <div class="form-grid form-grid--two">
+              <div class="form-group">
+                <label for="questionNumber">Nomor Soal <span class="required">*</span></label>
+                <input id="questionNumber" name="NUMBER" type="number" min="1" required>
+              </div>
+              <div class="form-group">
+                <label for="questionType">Jenis Soal <span class="required">*</span></label>
+                <select id="questionType" name="TYPE" required>
+                  <option value="MULTIPLE_CHOICE">Pilihan Ganda</option>
+                  <option value="ESSAY">Esai</option>
+                </select>
+              </div>
+              <div class="form-group form-group--span-two">
+                <label for="questionText">Pertanyaan <span class="required">*</span></label>
+                <textarea id="questionText" name="QUESTION_TEXT" rows="5" placeholder="Tuliskan pertanyaan..." required></textarea>
+              </div>
+              <div id="multipleChoiceFields" class="form-grid form-grid--two form-group--span-two">
+                <div class="form-group">
+                  <label for="questionOptionA">Pilihan A</label>
+                  <input id="questionOptionA" name="OPTION_A" type="text">
+                </div>
+                <div class="form-group">
+                  <label for="questionOptionB">Pilihan B</label>
+                  <input id="questionOptionB" name="OPTION_B" type="text">
+                </div>
+                <div class="form-group">
+                  <label for="questionOptionC">Pilihan C</label>
+                  <input id="questionOptionC" name="OPTION_C" type="text">
+                </div>
+                <div class="form-group">
+                  <label for="questionOptionD">Pilihan D</label>
+                  <input id="questionOptionD" name="OPTION_D" type="text">
+                </div>
+                <div class="form-group">
+                  <label for="questionOptionE">Pilihan E</label>
+                  <input id="questionOptionE" name="OPTION_E" type="text">
+                </div>
+                <div class="form-group">
+                  <label for="questionAnswerKey">Kunci Jawaban</label>
+                  <select id="questionAnswerKey" name="ANSWER_KEY">
+                    <option value="">Pilih kunci</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="questionScore">Bobot Nilai</label>
+                <input id="questionScore" name="SCORE" type="number" min="0" step="0.01" value="1">
+              </div>
+              <div class="form-group">
+                <label for="questionImageUrl">URL Gambar</label>
+                <input id="questionImageUrl" name="IMAGE_URL" type="url" placeholder="https://...">
+              </div>
+              <div class="form-group">
+                <label for="questionStatus">Status</label>
+                <select id="questionStatus" name="STATUS">
+                  <option value="ACTIVE">Aktif</option>
+                  <option value="INACTIVE">Tidak Aktif</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal__actions modal__actions--start">
+              <button id="resetQuestionButton" class="button button--secondary" type="button">Reset</button>
+              <button id="saveQuestionButton" class="button button--primary" type="submit">
+                <i data-lucide="save"></i>
+                Simpan Soal
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="question-list-panel">
+          <div class="question-list-header">
+            <div>
+              <strong>Daftar Soal</strong>
+              <span id="questionTotalLabel">0 soal</span>
+            </div>
+            <button id="refreshQuestionsButton" class="icon-button" type="button" aria-label="Perbarui daftar soal">
+              <i data-lucide="refresh-cw"></i>
+            </button>
+          </div>
+          <div id="adminQuestionList" class="admin-question-list"></div>
+          <div id="questionsEmptyState" class="empty-state" hidden></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL PENILAIAN
+       ===================================================== -->
+  <div id="gradingModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="gradingModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="gradingModal"></div>
+    <div class="modal__dialog modal__dialog--large">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">Penilaian Manual</span>
+          <h2 id="gradingModalTitle">Nilai Jawaban Mahasiswa</h2>
+          <p id="gradingStudentInfo">-</p>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="gradingModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="gradingForm">
+        <input id="gradingResponseId" name="RESPONSE_ID" type="hidden">
+        <div class="score-summary-card">
+          <div><span>Nilai Otomatis</span><strong id="gradingAutoScore">0</strong></div>
+          <div><span>Nilai Manual</span><strong id="gradingManualScorePreview">0</strong></div>
+          <div><span>Perkiraan Nilai Akhir</span><strong id="gradingFinalScorePreview">0</strong></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="gradingManualScore">Tambahan Nilai Esai</label>
+            <input id="gradingManualScore" name="MANUAL_SCORE" type="number" min="0" step="0.01" value="0" required>
+          </div>
+          <div class="form-group">
+            <label for="gradingReviewNote">Catatan Penilaian</label>
+            <textarea id="gradingReviewNote" name="REVIEW_NOTE" rows="5" placeholder="Masukkan catatan penilaian untuk mahasiswa..."></textarea>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="button button--secondary" type="button" data-close-modal="gradingModal">Batal</button>
+          <button id="saveGradeButton" class="button button--primary" type="submit">
+            <i data-lucide="badge-check"></i>
+            Simpan Nilai
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL CATATAN ABSENSI
+       ===================================================== -->
+  <div id="attendanceModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="attendanceModalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal="attendanceModal"></div>
+    <div class="modal__dialog modal__dialog--small">
+      <div class="modal__header">
+        <div>
+          <span class="panel__eyebrow">Konfirmasi Kehadiran</span>
+          <h2 id="attendanceModalTitle">Isi Absensi</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-modal="attendanceModal" aria-label="Tutup modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <form id="attendanceForm">
+        <input id="attendanceScheduleId" name="SCHEDULE_ID" type="hidden">
+        <div class="attendance-course-preview">
+          <strong id="attendanceCourseName">Mata Kuliah</strong>
+          <span id="attendanceScheduleInfo">-</span>
+        </div>
+        <div class="form-group">
+          <label for="attendanceNote">Catatan <span class="optional">(opsional)</span></label>
+          <textarea id="attendanceNote" name="note" rows="3" placeholder="Contoh: Mengikuti perkuliahan dari ruang kelas..."></textarea>
+        </div>
+        <div class="modal__actions">
+          <button class="button button--secondary" type="button" data-close-modal="attendanceModal">Batal</button>
+          <button id="checkInButton" class="button button--primary" type="submit">
+            <i data-lucide="clipboard-check"></i>
+            Simpan Absensi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Template baris loading tabel -->
+  <template id="tableLoadingTemplate">
+    <tr>
+      <td colspan="12">
+        <div class="content-loader">
+          <span class="spinner"></span>
+          <span>Memuat data...</span>
+        </div>
+      </td>
+    </tr>
+  </template>
+</body>
+</html>
